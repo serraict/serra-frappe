@@ -13,14 +13,16 @@ Before starting, ensure you have:
 
 ## Step 1: Test the build.sh Script
 
-1. Open a terminal and navigate to the serra-frappe-deployment directory:
+1. Open a terminal and navigate to the test_deployment directory:
    ```bash
-   cd work/test_deployment/serra-frappe-deployment
+   cd work/test_deployment
    ```
 
 2. Run the build script with the custom image name:
    ```bash
+   cd ..
    ./scripts/build.sh --image-name serra/frappe-test
+   cd work/test_deployment
    ```
 
 3. This will take some time (10-15 minutes). Once complete, verify the image was created:
@@ -38,7 +40,9 @@ Before starting, ensure you have:
 
 1. Deploy the application with the default configuration:
    ```bash
-   ./scripts/deploy.sh --env-file ../config/.env --project-name serra-frappe-test
+   cd ..
+   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test
+   cd work/test_deployment
    ```
 
 2. Verify that the docker-compose.yml file is generated and the containers are started:
@@ -84,7 +88,9 @@ Before starting, ensure you have:
 
 1. Test the update process:
    ```bash
-   ./scripts/update.sh --env-file ../config/.env --project-name serra-frappe-test --skip-pull --skip-build
+   cd ..
+   ./scripts/update.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --skip-pull --skip-build
+   cd work/test_deployment
    ```
 
 2. Verify that the update process completes successfully:
@@ -108,7 +114,9 @@ Before starting, ensure you have:
 
 2. Deploy with HTTPS:
    ```bash
-   ./scripts/deploy.sh --env-file ../config/.env --project-name serra-frappe-test --with-https
+   cd ..
+   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --with-https
+   cd work/test_deployment
    ```
 
 3. Verify that the containers are started:
@@ -123,7 +131,9 @@ Before starting, ensure you have:
 
 5. Deploy with proxy:
    ```bash
-   ./scripts/deploy.sh --env-file ../config/.env --project-name serra-frappe-test --with-proxy
+   cd ..
+   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --with-proxy
+   cd work/test_deployment
    ```
 
 6. Verify that the containers are started:
@@ -163,6 +173,7 @@ Before starting, ensure you have:
 
 3. Commit your changes:
    ```bash
+   cd ../..
    git add work/doing.md work/test_deployment/
    git commit -m "Update documentation based on test results"
    ```
