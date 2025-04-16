@@ -37,7 +37,12 @@ Test the deployment process for the Serra Frappe deployment to ensure it works c
 
 ## Issues Encountered
 
-- None yet
+1. **Platform Mismatch Error**: When running the containers, we encountered a platform mismatch error:
+   ```
+   Error response from daemon: image with reference serra/frappe-test:v15 was found but its platform (linux/arm64) does not match the specified platform (linux/amd64)
+   ```
+
+   **Solution**: Added platform support to the build.sh script to allow specifying the target platform. Updated the execution guide to include the --platform parameter when building the image.
 
 ## Progress
 
