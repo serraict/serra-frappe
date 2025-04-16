@@ -39,14 +39,14 @@ The test suite includes the following scripts:
 To run all tests:
 
 ```bash
-cd work/tests
+cd tests
 ./run_all_tests.sh
 ```
 
 To run a specific test:
 
 ```bash
-cd work/tests
+cd tests
 ./test_default_params.sh
 ```
 

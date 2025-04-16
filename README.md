@@ -95,19 +95,19 @@ The script will:
 
 ### Testing
 
-A comprehensive test suite is available in the `work/tests/` directory to verify the functionality of the build script:
+A comprehensive test suite is available in the `tests/` directory to verify the functionality of the build script:
 
 ```bash
 # Run all tests
-cd work/tests
+cd tests
 ./run_all_tests.sh
 
 # Run a specific test
-cd work/tests
+cd tests
 ./test_default_params.sh
 ```
 
-See the [test suite README](work/tests/README.md) for more details.
+See the [test suite README](tests/README.md) for more details.
 
 ## Future Considerations
 

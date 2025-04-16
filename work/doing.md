@@ -60,7 +60,7 @@ Verify that the build.sh script works correctly and produces a functional Docker
 
 1. Needed to remove frappe from apps.json, as it was already packaged with the container.
 2. Successfully tested the build script with default parameters and verified the image was created correctly.
-3. Created a comprehensive test suite in `work/tests/` to automate testing of all build script functionality:
+3. Created a comprehensive test suite in `tests/` to automate testing of all build script functionality:
    - `test_default_params.sh`: Tests with default parameters
    - `test_custom_branch.sh`: Tests with custom Frappe branch
    - `test_custom_image_name.sh`: Tests with custom image name
