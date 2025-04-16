@@ -54,9 +54,24 @@ echo "Version tag: $VERSION_TAG"
 echo
 
 # Generate base64 encoded apps.json
-APPS_JSON_BASE64=$(base64 -w 0 "$REPO_ROOT/apps.json")
+# Check if we're on macOS or Linux and use appropriate base64 options
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS
+  APPS_JSON_BASE64=$(base64 -i "$REPO_ROOT/apps.json")
+else
+  # Linux
+  APPS_JSON_BASE64=$(base64 -w 0 "$REPO_ROOT/apps.json")
+fi
 
-# Build the image
+# Verify apps.json exists
+if [ ! -f "$REPO_ROOT/apps.json" ]; then
+  echo "Error: apps.json not found at $REPO_ROOT/apps.json"
+  exit 1
+fi
+echo "Using apps.json from $REPO_ROOT/apps.json"
+echo
+
+# Build the image with reduced verbosity
 echo "Building Docker image..."
 docker build \
   --build-arg=FRAPPE_PATH="$FRAPPE_PATH" \
@@ -64,6 +79,7 @@ docker build \
   --build-arg=APPS_JSON_BASE64="$APPS_JSON_BASE64" \
   --tag="${IMAGE_NAME}:${VERSION_TAG}" \
   --file="$REPO_ROOT/frappe_docker/images/layered/Containerfile" \
+  --progress=auto \
   "$REPO_ROOT"
 
 # Tag the image with the main tag

@@ -23,7 +23,7 @@ Our deployment approach follows these key principles:
 
 ## Repository Structure
 
-```
+```text
 serra-frappe-deployment/
 ├── README.md
 ├── .gitignore
@@ -39,7 +39,8 @@ serra-frappe-deployment/
 ## Client Setup Structure
 
 On any machine (staging or production):
-```
+
+```text
 ~/serra-frappe/
 ├── serra-frappe-deployment/    # This repo
 └── config/                    # Machine-specific (git-ignored)
@@ -70,11 +71,46 @@ On any machine (staging or production):
 
 ## Getting Started
 
-Documentation for setup and deployment will be added as we implement the components.
+### Building the Custom Image
+
+The `build.sh` script creates a custom Docker image that includes Frappe and our custom apps (defined in `apps.json`).
+
+```bash
+# Build with default parameters
+./scripts/build.sh
+
+# Build with custom parameters
+./scripts/build.sh --frappe-branch version-14
+./scripts/build.sh --image-name custom/frappe
+./scripts/build.sh --image-tag custom-tag
+
+# Show help
+./scripts/build.sh --help
+```
+
+The script will:
+1. Build a Docker image with Frappe and the apps defined in `apps.json`
+2. Tag the image with both a version tag (including date) and a main tag
+3. Provide instructions for using the image in your deployment
+
+### Testing
+
+A comprehensive test suite is available in the `work/tests/` directory to verify the functionality of the build script:
+
+```bash
+# Run all tests
+cd work/tests
+./run_all_tests.sh
+
+# Run a specific test
+cd work/tests
+./test_default_params.sh
+```
+
+See the [test suite README](work/tests/README.md) for more details.
 
 ## Future Considerations
 
-- Automated testing strategy
 - Backup and restore procedures
 - Update and rollback processes
 - Monitoring and logging setup
