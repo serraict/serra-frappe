@@ -12,6 +12,7 @@ IMAGE_NAME="serra/frappe"
 IMAGE_TAG="v15"
 BUILD_DATE=$(date -u +"%Y-%m-%d")
 VERSION_TAG="${IMAGE_TAG}-${BUILD_DATE}"
+PLATFORM="linux/amd64"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -29,12 +30,17 @@ while [[ $# -gt 0 ]]; do
       VERSION_TAG="${IMAGE_TAG}-${BUILD_DATE}"
       shift 2
       ;;
+    --platform)
+      PLATFORM="$2"
+      shift 2
+      ;;
     --help)
       echo "Usage: $0 [options]"
       echo "Options:"
       echo "  --frappe-branch BRANCH    Frappe branch to use (default: version-15)"
       echo "  --image-name NAME         Docker image name (default: serra/frappe)"
       echo "  --image-tag TAG           Docker image tag (default: v15)"
+      echo "  --platform PLATFORM       Docker build platform (default: linux/amd64)"
       echo "  --help                    Show this help message"
       exit 0
       ;;
@@ -73,12 +79,14 @@ echo
 
 # Build the image with reduced verbosity
 echo "Building Docker image..."
+echo "Platform: $PLATFORM"
 docker build \
   --build-arg=FRAPPE_PATH="$FRAPPE_PATH" \
   --build-arg=FRAPPE_BRANCH="$FRAPPE_BRANCH" \
   --build-arg=APPS_JSON_BASE64="$APPS_JSON_BASE64" \
   --tag="${IMAGE_NAME}:${VERSION_TAG}" \
   --file="$REPO_ROOT/frappe_docker/images/layered/Containerfile" \
+  --platform="$PLATFORM" \
   --progress=auto \
   "$REPO_ROOT"
 
