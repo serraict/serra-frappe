@@ -20,9 +20,7 @@ Before starting, ensure you have:
 
 2. Run the build script with the custom image name:
    ```bash
-   cd ..
-   ./scripts/build.sh --image-name serra/frappe-test
-   cd work/test_deployment
+   ./serra-frappe-deployment/scripts/build.sh --image-name serra/frappe-test
    ```
 
 3. This will take some time (10-15 minutes). Once complete, verify the image was created:
@@ -40,9 +38,7 @@ Before starting, ensure you have:
 
 1. Deploy the application with the default configuration:
    ```bash
-   cd ..
-   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test
-   cd work/test_deployment
+   ./serra-frappe-deployment/scripts/deploy.sh --env-file config/.env --project-name serra-frappe-test
    ```
 
 2. Verify that the docker-compose.yml file is generated and the containers are started:
@@ -88,9 +84,7 @@ Before starting, ensure you have:
 
 1. Test the update process:
    ```bash
-   cd ..
-   ./scripts/update.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --skip-pull --skip-build
-   cd work/test_deployment
+   ./serra-frappe-deployment/scripts/update.sh --env-file config/.env --project-name serra-frappe-test --skip-pull --skip-build
    ```
 
 2. Verify that the update process completes successfully:
@@ -114,9 +108,7 @@ Before starting, ensure you have:
 
 2. Deploy with HTTPS:
    ```bash
-   cd ..
-   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --with-https
-   cd work/test_deployment
+   ./serra-frappe-deployment/scripts/deploy.sh --env-file config/.env --project-name serra-frappe-test --with-https
    ```
 
 3. Verify that the containers are started:
@@ -131,9 +123,7 @@ Before starting, ensure you have:
 
 5. Deploy with proxy:
    ```bash
-   cd ..
-   ./scripts/deploy.sh --env-file work/test_deployment/config/.env --project-name serra-frappe-test --with-proxy
-   cd work/test_deployment
+   ./serra-frappe-deployment/scripts/deploy.sh --env-file config/.env --project-name serra-frappe-test --with-proxy
    ```
 
 6. Verify that the containers are started:
