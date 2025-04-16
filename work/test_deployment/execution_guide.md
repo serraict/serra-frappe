@@ -14,16 +14,21 @@ Before starting, ensure you have:
 ## Step 1: Test the build.sh Script
 
 1. Open a terminal and navigate to the test_deployment directory:
+
    ```bash
    cd work/test_deployment
    ```
 
-2. Run the build script with the custom image name:
+2. Run the build script with the custom image name and platform:
+
    ```bash
-   ./serra-frappe-deployment/scripts/build.sh --image-name serra/frappe-test
+   ./serra-frappe-deployment/scripts/build.sh --image-name serra/frappe-test --platform linux/amd64
    ```
 
+   Note: If you're on an ARM-based Mac (M1/M2/M3), you might need to use `--platform linux/arm64` instead.
+
 3. This will take some time (10-15 minutes). Once complete, verify the image was created:
+
    ```bash
    docker images | grep serra/frappe-test
    ```
@@ -38,7 +43,7 @@ Before starting, ensure you have:
 
 1. Deploy the application with the default configuration:
    ```bash
-   ./serra-frappe-deployment/scripts/deploy.sh --env-file config/.env --project-name serra-frappe-test
+   ./serra-frappe-deployment/scripts/deploy.sh --env-file "$(pwd)/config/.env" --project-name serra-frappe-test
    ```
 
 2. Verify that the docker-compose.yml file is generated and the containers are started:
