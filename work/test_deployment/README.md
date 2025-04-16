@@ -50,11 +50,21 @@ The following documentation is available:
 
 ## Testing Process
 
-1. Follow the instructions in `build_instructions.md` to test the build.sh script
-2. Follow the instructions in `deploy_instructions.md` to test the deploy.sh script
-3. Verify that all services start correctly
-4. Follow the instructions in `update_instructions.md` to test the update.sh script
-5. Document any issues encountered
+For a step-by-step guide to executing the test plan, see the `execution_guide.md` file. This guide will walk you through:
+
+1. Testing the build.sh script
+2. Testing the deploy.sh script
+3. Verifying services
+4. Testing the update.sh script
+5. Testing different deployment options
+6. Cleaning up
+7. Updating documentation
+
+Alternatively, you can follow the individual instruction files:
+
+- `build_instructions.md`: Instructions for testing the build.sh script
+- `deploy_instructions.md`: Instructions for testing the deploy.sh script
+- `update_instructions.md`: Instructions for testing the update.sh script
 
 ## Cleanup
 
