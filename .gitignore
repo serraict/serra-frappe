@@ -2,6 +2,9 @@
 .env
 config/
 
+# Test environment config
+work/test_deployment/config/
+
 # Python
 __pycache__/
 *.py[cod]
