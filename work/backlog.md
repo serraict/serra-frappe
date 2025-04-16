@@ -4,12 +4,7 @@
 
 ### Immediate Tasks
 
-1. **Testing the Build Process**
-   - Test the build.sh script on a development machine
-   - Verify that the serra-vine-configurator app is correctly included
-   - Document any issues or adjustments needed
-
-2. **Testing the Deployment Process**
+1. **Testing the Deployment Process**
    - Set up a test environment
    - Test the deploy.sh script
    - Verify that all services start correctly
