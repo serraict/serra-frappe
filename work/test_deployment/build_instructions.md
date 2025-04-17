@@ -11,13 +11,33 @@ We've created a GitHub Actions workflow file at `.github/workflows/docker-build.
 3. Tag the image with both a version tag (including date) and a main tag
 4. Push the image to GitHub Container Registry (ghcr.io)
 
+## How the Build Works
+
+The workflow uses our `scripts/build.sh` script to build the Docker image. This script:
+
+1. Uses the Containerfile from `frappe_docker/images/layered/Containerfile`
+2. Passes the `apps.json` file as a base64-encoded argument
+3. Sets various build arguments like Frappe branch, image name, etc.
+4. Builds the image for the linux/amd64 platform
+
+The `apps.json` file defines the custom apps to include in the image. In our case, it includes the serra-vine-configurator app:
+
+```json
+[
+  {
+    "url": "https://github.com/serraict/serra-vine-configurator",
+    "branch": "main"
+  }
+]
+```
+
 ## Triggering the Build
 
 You can trigger the build in two ways:
 
 1. **Manually**: Go to the Actions tab in your GitHub repository and select the "Build and Publish Docker Image" workflow. Click "Run workflow" and optionally specify a custom tag.
 
-2. **Automatically**: The workflow will automatically run when changes are pushed to the main branch that affect `apps.json`, `Dockerfile`, or the workflow file itself.
+2. **Automatically**: The workflow will automatically run when changes are pushed to the main branch that affect `apps.json`, `scripts/build.sh`, `frappe_docker/images/layered/Containerfile`, or the workflow file itself.
 
 ## Expected Output
 
@@ -28,10 +48,8 @@ The build process will take some time (10-15 minutes) and you can monitor the pr
 After the image is built and published, pull it to your local machine:
 
 ```bash
-docker pull ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
+docker pull ghcr.io/serraict/frappe-test:v15
 ```
-
-Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
 
 ## Verifying the Image
 
@@ -48,7 +66,7 @@ This should show the image you just pulled from GitHub Container Registry.
 Update the `.env` file to use this image:
 
 ```
-CUSTOM_IMAGE=ghcr.io/YOUR_GITHUB_USERNAME/frappe-test
+CUSTOM_IMAGE=ghcr.io/serraict/frappe-test
 CUSTOM_TAG=v15
 PULL_POLICY=always
 ```
