@@ -27,6 +27,20 @@ Before starting, ensure you have:
 
    Note: If you're on an ARM-based Mac (M1/M2/M3), you might need to use `--platform linux/arm64` instead.
 
+   **Platform Compatibility Note**:
+   - On ARM-based Macs, building for linux/amd64 might be slow or problematic due to emulation.
+   - If you build for linux/arm64 but encounter deployment issues, you have two options:
+
+     a) Modify the .env file to specify the platform:
+     ```bash
+     echo "DOCKER_DEFAULT_PLATFORM=linux/arm64" >> config/.env
+     ```
+
+     b) Use Docker's platform flag in the deployment command:
+     ```bash
+     DOCKER_DEFAULT_PLATFORM=linux/arm64 ./serra-frappe-deployment/scripts/deploy.sh --env-file "$(pwd)/config/.env" --project-name serra-frappe-test
+     ```
+
 3. This will take some time (10-15 minutes). Once complete, verify the image was created:
 
    ```bash

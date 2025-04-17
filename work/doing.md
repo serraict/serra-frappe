@@ -44,6 +44,12 @@ Test the deployment process for the Serra Frappe deployment to ensure it works c
 
    **Solution**: Added platform support to the build.sh script to allow specifying the target platform. Updated the execution guide to include the --platform parameter when building the image.
 
+2. **ARM-based Mac Compatibility Issue**: On ARM-based Macs, building for linux/amd64 might be slow or problematic due to emulation, but building for linux/arm64 can cause deployment issues.
+
+   **Solution**: Added two options to the execution guide:
+   - Modify the .env file to specify the platform: `DOCKER_DEFAULT_PLATFORM=linux/arm64`
+   - Use Docker's platform flag in the deployment command: `DOCKER_DEFAULT_PLATFORM=linux/arm64 ./serra-frappe-deployment/scripts/deploy.sh ...`
+
 ## Progress
 
 1. ✅ Created a test directory structure
