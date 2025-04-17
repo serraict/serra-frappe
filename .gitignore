@@ -5,6 +5,9 @@ config/
 # Test environment config
 work/test_deployment/config/
 
+# Generated files
+docker-compose.yml
+
 # Python
 __pycache__/
 *.py[cod]
