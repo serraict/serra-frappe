@@ -7,11 +7,16 @@ on:
         description: 'Image tag (default: v15)'
         required: false
         default: 'v15'
+      frappe_branch:
+        description: 'Frappe branch (default: version-15)'
+        required: false
+        default: 'version-15'
   push:
     branches: [ main ]
     paths:
       - 'apps.json'
-      - 'Dockerfile'
+      - 'scripts/build.sh'
+      - 'frappe_docker/images/layered/Containerfile'
       - '.github/workflows/docker-build.yml'
 
 jobs:
@@ -20,6 +25,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -35,12 +42,19 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}-${{ steps.date.outputs.date }}
-            ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}
+      - name: Build Docker image
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh \
+            --frappe-branch ${{ github.event.inputs.frappe_branch || 'version-15' }} \
+            --image-name ghcr.io/${{ github.repository_owner }}/frappe-test \
+            --image-tag ${{ github.event.inputs.tag || 'v15' }} \
+            --platform linux/amd64
+
+      - name: Push to GitHub Container Registry
+        run: |
+          # Push the versioned tag (e.g., v15-2023-04-17)
+          docker push ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}-${{ steps.date.outputs.date }}
+
+          # Push the latest tag (e.g., v15)
+          docker push ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}
