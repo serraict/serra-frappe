@@ -10,48 +10,49 @@ Before starting, ensure you have:
 2. Git installed
 3. Sufficient disk space (at least 10GB free)
 4. No other services running on ports 8090 and 8443
+5. Access to GitHub and permissions to run GitHub Actions in your repository
 
-## Step 1: Test the build.sh Script
+## Step 1: Build the Docker Image with GitHub Actions
 
-1. Open a terminal and navigate to the test_deployment directory:
+Instead of building the Docker image locally, we'll use GitHub Actions to build and publish the image to avoid platform mismatch issues.
 
+1. Ensure the GitHub Actions workflow file is in place:
    ```bash
+   ls -la .github/workflows/docker-build.yml
+   ```
+
+2. Trigger the GitHub Actions workflow:
+   - Go to your GitHub repository
+   - Navigate to the "Actions" tab
+   - Select the "Build and Publish Docker Image" workflow
+   - Click "Run workflow" and use the default tag (v15) or specify a custom tag
+   - Click "Run workflow" to start the build
+
+3. Monitor the build progress in the GitHub Actions tab. This will take some time (10-15 minutes).
+
+4. Once the build is complete, pull the image to your local machine:
+   ```bash
+   docker pull ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
+   ```
+   Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
+
+5. Verify the image was pulled correctly:
+   ```bash
+   docker images | grep frappe-test
+   ```
+
+6. Update the .env file to use this image:
+   ```bash
+   # Navigate to the test_deployment directory
    cd work/test_deployment
+
+   # Update the .env file
+   sed -i 's/CUSTOM_IMAGE=serra\/frappe-test/CUSTOM_IMAGE=ghcr.io\/YOUR_GITHUB_USERNAME\/frappe-test/' config/.env
+   sed -i 's/PULL_POLICY=never/PULL_POLICY=always/' config/.env
    ```
+   Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
 
-2. Run the build script with the custom image name and platform:
-
-   ```bash
-   ./serra-frappe-deployment/scripts/build.sh --image-name serra/frappe-test --platform linux/amd64
-   ```
-
-   Note: If you're on an ARM-based Mac (M1/M2/M3), you might need to use `--platform linux/arm64` instead.
-
-   **Platform Compatibility Note**:
-   - On ARM-based Macs, building for linux/amd64 might be slow or problematic due to emulation.
-   - If you build for linux/arm64 but encounter deployment issues, you have two options:
-
-     a) Modify the .env file to specify the platform:
-     ```bash
-     echo "DOCKER_DEFAULT_PLATFORM=linux/arm64" >> config/.env
-     ```
-
-     b) Use Docker's platform flag in the deployment command:
-     ```bash
-     DOCKER_DEFAULT_PLATFORM=linux/arm64 ./serra-frappe-deployment/scripts/deploy.sh --env-file "$(pwd)/config/.env" --project-name serra-frappe-test
-     ```
-
-3. This will take some time (10-15 minutes). Once complete, verify the image was created:
-
-   ```bash
-   docker images | grep serra/frappe-test
-   ```
-
-4. You should see two images with the same image ID:
-   - `serra/frappe-test:v15-YYYY-MM-DD`
-   - `serra/frappe-test:v15`
-
-5. Document any issues encountered in the work/doing.md file.
+7. Document any issues encountered in the work/doing.md file.
 
 ## Step 2: Test the deploy.sh Script
 
@@ -103,8 +104,9 @@ Before starting, ensure you have:
 
 1. Test the update process:
    ```bash
-   ./serra-frappe-deployment/scripts/update.sh --env-file config/.env --project-name serra-frappe-test --skip-pull --skip-build
+   ./serra-frappe-deployment/scripts/update.sh --env-file config/.env --project-name serra-frappe-test
    ```
+   Note: We've removed the `--skip-pull` flag to ensure the latest image is pulled from the registry.
 
 2. Verify that the update process completes successfully:
    ```bash
@@ -164,10 +166,11 @@ Before starting, ensure you have:
    docker compose --project-name serra-frappe-test down
    ```
 
-2. Remove the test images:
+2. Remove the pulled image:
    ```bash
-   docker rmi serra/frappe-test:v15 serra/frappe-test:v15-$(date -u +"%Y-%m-%d")
+   docker rmi ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
    ```
+   Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
 
 3. Remove the hosts file entry:
    ```bash
@@ -183,10 +186,10 @@ Before starting, ensure you have:
 3. Commit your changes:
    ```bash
    cd ../..
-   git add work/doing.md work/test_deployment/
-   git commit -m "Update documentation based on test results"
+   git add work/doing.md work/test_deployment/ .github/
+   git commit -m "Update documentation and add GitHub Actions workflow"
    ```
 
 ## Conclusion
 
-By following these steps, you will have fully tested the Serra Frappe deployment process and documented any issues encountered. This will help ensure that the deployment process is reliable and well-documented for future use.
+By following these steps, you will have fully tested the Serra Frappe deployment process using a Docker image built with GitHub Actions, and documented any issues encountered. This approach avoids platform mismatch issues and provides a more production-like workflow.

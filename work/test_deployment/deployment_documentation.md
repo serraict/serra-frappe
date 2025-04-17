@@ -22,6 +22,10 @@ Before deploying, ensure you have the following:
    - Ports 80 and 443 available (for production)
    - Ports 8080 and 8443 available (for testing)
 
+5. **GitHub Access**
+   - Access to GitHub and permissions to run GitHub Actions in your repository
+   - Permissions to publish to GitHub Container Registry
+
 ## Installation
 
 ### 1. Clone the Repository
@@ -57,18 +61,32 @@ Important configuration options to set:
 - `DB_PASSWORD`: Set a secure password for the database
 - `SITES`: Set the site name(s)
 - `HTTP_PUBLISH_PORT` and `HTTPS_PUBLISH_PORT`: Set the ports to publish
+- `CUSTOM_IMAGE`: Set to your GitHub Container Registry image
+- `PULL_POLICY`: Set to "always" to ensure Docker always pulls the latest version
 
-### 3. Build the Custom Image
+### 3. Build the Custom Image with GitHub Actions
 
-```bash
-# Build with default parameters
-./scripts/build.sh
+Instead of building the image locally, we use GitHub Actions to build and publish the image to GitHub Container Registry:
 
-# Or build with custom parameters
-./scripts/build.sh --frappe-branch version-14
-./scripts/build.sh --image-name custom/frappe
-./scripts/build.sh --image-tag custom-tag
-```
+1. Ensure the GitHub Actions workflow file is in place:
+   ```bash
+   ls -la .github/workflows/docker-build.yml
+   ```
+
+2. Trigger the GitHub Actions workflow:
+   - Go to your GitHub repository
+   - Navigate to the "Actions" tab
+   - Select the "Build and Publish Docker Image" workflow
+   - Click "Run workflow" and use the default tag (v15) or specify a custom tag
+   - Click "Run workflow" to start the build
+
+3. Monitor the build progress in the GitHub Actions tab.
+
+4. Once the build is complete, pull the image to your local machine:
+   ```bash
+   docker pull ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
+   ```
+   Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
 
 ### 4. Deploy the Application
 
@@ -112,10 +130,12 @@ FRAPPE_VERSION=v15
 #### Custom Image Configuration
 
 ```
-CUSTOM_IMAGE=serra/frappe
+CUSTOM_IMAGE=ghcr.io/YOUR_GITHUB_USERNAME/frappe-test
 CUSTOM_TAG=v15
-PULL_POLICY=never
+PULL_POLICY=always
 ```
+
+Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.
 
 #### Database Configuration
 
@@ -186,6 +206,19 @@ The `deploy.sh` script supports several options:
 ./scripts/update.sh --skip-backup
 ```
 
+Note: With our GitHub Actions approach, the `--skip-build` flag is used to skip pulling the latest image from the registry.
+
+### Triggering a New Image Build
+
+If you need to update the Docker image:
+
+1. Go to your GitHub repository
+2. Navigate to the "Actions" tab
+3. Select the "Build and Publish Docker Image" workflow
+4. Click "Run workflow" and use the default tag (v15) or specify a custom tag
+5. Click "Run workflow" to start the build
+6. Once the build is complete, run the update script without the `--skip-build` flag to pull the new image
+
 ### Backing Up Sites
 
 ```bash
@@ -253,6 +286,15 @@ If containers fail to start:
    docker compose --project-name serra-frappe up -d
    ```
 
+### GitHub Actions Issues
+
+If the GitHub Actions workflow fails:
+
+1. Check the workflow logs in the GitHub Actions tab
+2. Ensure you have the necessary permissions to publish to GitHub Container Registry
+3. Verify that the workflow file is correctly configured
+4. Check for any errors in the build process
+
 ### Database Issues
 
 If you encounter database connection issues:
@@ -298,7 +340,9 @@ If you cannot access your site:
 To update to a new version of Frappe:
 
 1. Update the `FRAPPE_VERSION` in your `.env` file
-2. Run the update script:
+2. Update the GitHub Actions workflow to use the new version
+3. Trigger a new build in GitHub Actions
+4. Run the update script:
    ```bash
    ./scripts/update.sh
    ```
@@ -325,3 +369,5 @@ docker volume prune
 3. **HTTPS**: Enable HTTPS in production environments
 4. **Firewall**: Configure a firewall to restrict access to only necessary ports
 5. **Regular Updates**: Keep the system updated with the latest security patches
+6. **GitHub Secrets**: Ensure that your GitHub repository is properly secured, especially if using secrets for authentication
+7. **Container Registry Access**: Restrict access to your GitHub Container Registry to only authorized users

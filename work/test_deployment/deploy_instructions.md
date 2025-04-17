@@ -1,6 +1,22 @@
 # Deploying the Application
 
-After building the custom Docker image, you can deploy the application using the `deploy.sh` script. This document provides instructions for testing the deployment process.
+After building the Docker image with GitHub Actions and pulling it to your local machine, you can deploy the application using the `deploy.sh` script. This document provides instructions for testing the deployment process.
+
+## Prerequisites
+
+Before deploying, ensure that:
+
+1. You have triggered the GitHub Actions workflow to build the Docker image
+2. You have pulled the image to your local machine:
+   ```bash
+   docker pull ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
+   ```
+3. You have updated the `.env` file to use this image:
+   ```
+   CUSTOM_IMAGE=ghcr.io/YOUR_GITHUB_USERNAME/frappe-test
+   CUSTOM_TAG=v15
+   PULL_POLICY=always
+   ```
 
 ## Basic Deployment
 

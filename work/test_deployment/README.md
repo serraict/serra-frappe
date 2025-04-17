@@ -10,7 +10,7 @@ work/test_deployment/
 ├── serra-frappe-deployment/        # Symbolic link to the repository
 ├── config/                         # Test configuration
 │   └── .env                        # Test environment variables
-├── build_instructions.md           # Instructions for testing the build.sh script
+├── build_instructions.md           # Instructions for testing with GitHub Actions
 ├── deploy_instructions.md          # Instructions for testing the deploy.sh script
 ├── update_instructions.md          # Instructions for testing the update.sh script
 ├── test_plan.md                    # Comprehensive test plan
@@ -34,15 +34,20 @@ In our test environment, we've created a symbolic link to the repository and a t
 
 The test configuration file (`config/.env`) is based on the `env.example` file from the repository, with the following modifications:
 
-- Changed the image name to `serra/frappe-test` to avoid conflicts with any existing images
+- Changed the image name to use the GitHub Container Registry image
 - Set a test database password
 - Changed the HTTP port to 8090 to avoid conflicts with any existing services
+- Set `PULL_POLICY=always` to ensure Docker always pulls the latest version of the image
+
+## GitHub Actions Workflow
+
+We've added a GitHub Actions workflow (`.github/workflows/docker-build.yml`) to build and publish the Docker image to GitHub Container Registry. This approach avoids platform mismatch issues and provides a more production-like workflow.
 
 ## Documentation
 
 The following documentation is available:
 
-- **build_instructions.md**: Instructions for testing the build.sh script
+- **build_instructions.md**: Instructions for using GitHub Actions to build the Docker image
 - **deploy_instructions.md**: Instructions for testing the deploy.sh script
 - **update_instructions.md**: Instructions for testing the update.sh script
 - **test_plan.md**: A comprehensive test plan for testing the deployment process
@@ -52,7 +57,7 @@ The following documentation is available:
 
 For a step-by-step guide to executing the test plan, see the `execution_guide.md` file. This guide will walk you through:
 
-1. Testing the build.sh script
+1. Building the Docker image with GitHub Actions
 2. Testing the deploy.sh script
 3. Verifying services
 4. Testing the update.sh script
@@ -62,7 +67,7 @@ For a step-by-step guide to executing the test plan, see the `execution_guide.md
 
 Alternatively, you can follow the individual instruction files:
 
-- `build_instructions.md`: Instructions for testing the build.sh script
+- `build_instructions.md`: Instructions for using GitHub Actions to build the Docker image
 - `deploy_instructions.md`: Instructions for testing the deploy.sh script
 - `update_instructions.md`: Instructions for testing the update.sh script
 
@@ -76,8 +81,10 @@ After testing, you can clean up the test environment by:
    docker compose --project-name serra-frappe-test down
    ```
 
-2. Removing the test images:
+2. Removing the pulled image:
 
    ```bash
-   docker rmi serra/frappe-test:v15 serra/frappe-test:v15-YYYY-MM-DD
+   docker rmi ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
    ```
+
+   Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username or organization name.

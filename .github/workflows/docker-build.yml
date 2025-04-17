@@ -1,0 +1,46 @@
+name: Build and Publish Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag (default: v15)'
+        required: false
+        default: 'v15'
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps.json'
+      - 'Dockerfile'
+      - '.github/workflows/docker-build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}-${{ steps.date.outputs.date }}
+            ghcr.io/${{ github.repository_owner }}/frappe-test:${{ github.event.inputs.tag || 'v15' }}

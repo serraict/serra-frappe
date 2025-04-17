@@ -1,6 +1,6 @@
 # Serra Frappe Deployment - Test Plan
 
-This document outlines the test plan for the Serra Frappe deployment process. It covers the setup of a test environment, testing the build, deploy, and update scripts, and verifying that all services start correctly.
+This document outlines the test plan for the Serra Frappe deployment process. It covers the setup of a test environment, testing the GitHub Actions workflow for building the Docker image, testing the deploy and update scripts, and verifying that all services start correctly.
 
 ## Test Environment Setup
 
@@ -15,40 +15,49 @@ This document outlines the test plan for the Serra Frappe deployment process. It
 2. Create a test configuration file:
    - Copy `env.example` to `work/test_deployment/config/.env`
    - Modify the configuration for testing purposes:
-     - Change the image name to `serra/frappe-test`
+     - Change the image name to use the GitHub Container Registry image
      - Set a test database password
      - Change the HTTP port to 8090 to avoid conflicts
+     - Set `PULL_POLICY=always` to ensure Docker always pulls the latest version of the image
 
-## Build Script Testing
+3. Set up GitHub Actions workflow:
+   - Create the `.github/workflows/docker-build.yml` file
+   - Configure the workflow to build for the appropriate platform (linux/amd64)
+   - Set up image publishing to GitHub Container Registry
 
-1. Test building with default parameters:
+## GitHub Actions Workflow Testing
+
+1. Test manual workflow trigger:
+   - Go to the GitHub repository
+   - Navigate to the "Actions" tab
+   - Select the "Build and Publish Docker Image" workflow
+   - Click "Run workflow" with the default tag (v15)
+   - Verify that the workflow runs successfully
+   - Verify that the image is published to GitHub Container Registry
+
+2. Test workflow trigger with custom tag:
+   - Go to the GitHub repository
+   - Navigate to the "Actions" tab
+   - Select the "Build and Publish Docker Image" workflow
+   - Click "Run workflow" and specify a custom tag
+   - Verify that the workflow runs successfully
+   - Verify that the image is published to GitHub Container Registry with the custom tag
+
+3. Test automatic workflow trigger:
+   - Make a change to the `apps.json` file
+   - Push the change to the main branch
+   - Verify that the workflow is triggered automatically
+   - Verify that the image is published to GitHub Container Registry
+
+4. Test pulling the image:
    ```bash
-   cd work/test_deployment/serra-frappe-deployment
-   ./scripts/build.sh
+   docker pull ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
    ```
-   - Verify that the image is created with the default name and tag
-
-2. Test building with custom parameters:
-   ```bash
-   ./scripts/build.sh --image-name serra/frappe-test
-   ```
-   - Verify that the image is created with the custom name
-
-3. Test building with a custom Frappe branch:
-   ```bash
-   ./scripts/build.sh --frappe-branch version-14
-   ```
-   - Verify that the image is created with the custom branch
-
-4. Test building with a custom image tag:
-   ```bash
-   ./scripts/build.sh --image-tag test-tag
-   ```
-   - Verify that the image is created with the custom tag
+   - Verify that the image is pulled successfully
 
 5. Test error handling:
-   - Test with an invalid parameter
-   - Test with a missing apps.json file
+   - Test with an invalid workflow configuration
+   - Test with insufficient permissions to publish to GitHub Container Registry
 
 ## Deploy Script Testing
 
@@ -127,7 +136,15 @@ This document outlines the test plan for the Serra Frappe deployment process. It
    - Verify that the containers are still running
    - Verify that the site is still accessible
 
-3. Test error handling:
+3. Test update after a new image build:
+   - Trigger a new image build in GitHub Actions
+   - Run the update script without the `--skip-build` flag
+   - Verify that the new image is pulled
+   - Verify that the update process completes successfully
+   - Verify that the containers are still running
+   - Verify that the site is still accessible
+
+4. Test error handling:
    - Test with a non-existent environment file
    - Test with an invalid parameter
 
@@ -139,19 +156,20 @@ This document outlines the test plan for the Serra Frappe deployment process. It
    ```
    - Verify that all containers are stopped and removed
 
-2. Remove the test images:
+2. Remove the pulled image:
    ```bash
-   docker rmi serra/frappe-test:v15 serra/frappe-test:v15-YYYY-MM-DD
+   docker rmi ghcr.io/YOUR_GITHUB_USERNAME/frappe-test:v15
    ```
-   - Verify that the images are removed
+   - Verify that the image is removed
 
 ## Documentation
 
 Based on the testing results, document the deployment process in detail, including:
 
 1. Prerequisites
-2. Installation steps
-3. Configuration options
-4. Common operations (create site, install app, etc.)
-5. Troubleshooting
-6. Update and rollback procedures
+2. GitHub Actions workflow setup and usage
+3. Installation steps
+4. Configuration options
+5. Common operations (create site, install app, etc.)
+6. Troubleshooting
+7. Update and rollback procedures
